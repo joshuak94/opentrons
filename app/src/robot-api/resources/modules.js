@@ -137,6 +137,11 @@ export function getModulesState(
   return modules.filter(m => tcEnabled || m.name !== 'thermocycler')
 }
 
+const isModulePrepared = (module: Module): boolean => {
+  if (module.name === 'thermocycler') return module.data.lid === 'open'
+  return false
+}
+
 export function getUnpreparedModules(state: AppState): Array<Module> {
   const robot = getConnectedRobot(state)
   const sessionModules = robotSelectors.getModules(state)
@@ -145,10 +150,11 @@ export function getUnpreparedModules(state: AppState): Array<Module> {
     .map(m => m.name)
     .filter(name => PREPARABLE_MODULES.includes(name))
 
+  // return actual modules that are both
+  // a) required to be prepared by the session
+  // b) not prepared according to isModulePrepared
   return actualModules.filter(
-    m =>
-      preparableSessionModules.includes(m.name) &&
-      (m.name !== 'thermocycler' || m.data.lid !== 'open')
+    m => preparableSessionModules.includes(m.name) && isModulePrepared(m)
   )
 }
 
