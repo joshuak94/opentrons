@@ -33,6 +33,8 @@ const customDefs = handleActions(
       [getLabwareDefURI(action.payload.newDef)]: action.payload.newDef,
     }),
     LOAD_FILE: (state, action: LoadFileAction) => {
+      // TODO IMMEDIATELY: since uploading opentrons namespace labware is allowed, also need to
+      // put it in here. Can't rely on getLabwareDefIsStandard.
       const customDefsFromFile = pickBy(
         action.payload.file.labwareDefinitions,
         def => !getLabwareDefIsStandard(def) // assume if it's not standard, it's custom
